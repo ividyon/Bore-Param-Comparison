@@ -4,6 +4,10 @@ Uses https://github.com/JKAnderson/SoulsFormats and https://github.com/soulsmods
 Uses updated versions of SoulsFormats and Paramdex from https://github.com/soulsmods/DSMapStudio
 
 ## Changes
+### v1.4.1
+* Basic Elden Ring DLC support. Updated systems were taken from [Smithbox](https://github.com/vawser/Smithbox) (thanks to everybody involved!).
+* Fixed a crash involving row zero. This affected default ER DLC params.
+* Param updates for other games.
 ### v1.4.0
 * AC6 support.
 * Rough DESR support.
