@@ -73,7 +73,7 @@ namespace SoulsFormats
             IMappedMemoryOwner fsData = dataFile.CreateMemoryAccessor(0, 0, MemoryMappedFileAccess.Read);
             BinaryReaderEx bhdReader = new BinaryReaderEx(false, bhdBytes);
             BinaryReaderEx bdtReader = new BinaryReaderEx(false, fsData.Memory);
-            return new BXF4(bhdReader, bdtReader) {_mappedMemory = fsData };
+            return new BXF4(bhdReader, bdtReader) { _mappedMemory2 = fsData };
         }
 
         /// <summary>
@@ -85,7 +85,7 @@ namespace SoulsFormats
             IMappedMemoryOwner fsHeader = headerFile.CreateMemoryAccessor(0, 0, MemoryMappedFileAccess.Read);
             BinaryReaderEx bhdReader = new BinaryReaderEx(false, fsHeader.Memory);
             BinaryReaderEx bdtReader = new BinaryReaderEx(false, bdtBytes);
-            return new BXF4(bhdReader, bdtReader) { _mappedMemory = fsHeader } ;
+            return new BXF4(bhdReader, bdtReader) { _mappedMemory1 = fsHeader };
         }
 
         /// <summary>
@@ -99,7 +99,7 @@ namespace SoulsFormats
                 fsData = dataFile.CreateMemoryAccessor(0, 0, MemoryMappedFileAccess.Read);
             BinaryReaderEx bhdReader = new BinaryReaderEx(false, fsHeader.Memory);
             BinaryReaderEx bdtReader = new BinaryReaderEx(false, fsData.Memory);
-            return new BXF4(bhdReader, bdtReader) { _mappedMemory = fsHeader };
+            return new BXF4(bhdReader, bdtReader) { _mappedMemory1 = fsHeader, _mappedMemory2 = fsData };
         }
         #endregion
 
@@ -216,7 +216,9 @@ namespace SoulsFormats
         /// Creates an empty BXF4 formatted for DS3.
         /// </summary>
 
-        private IMappedMemoryOwner _mappedMemory = null;
+        private IMappedMemoryOwner _mappedMemory => throw new NotSupportedException();
+        private IMappedMemoryOwner _mappedMemory1 = null;
+        private IMappedMemoryOwner _mappedMemory2 = null;
 
         public BXF4()
         {
@@ -268,7 +270,7 @@ namespace SoulsFormats
             br.ReadBoolean(); // BitBigEndian
             br.AssertByte(0);
             br.AssertInt32(0);
-            br.AssertInt64(0x30, 0x40); // Header size, pretty sure 0x40 is just a mistake
+            br.AssertInt64([0x30, 0x40]); // Header size, pretty sure 0x40 is just a mistake
             br.ReadFixStr(8); // Version
             br.AssertInt64(0);
             br.AssertInt64(0);
@@ -298,7 +300,7 @@ namespace SoulsFormats
 
             bxf.Unicode = br.ReadBoolean();
             bxf.Format = Binder.ReadFormat(br, bxf.BitBigEndian);
-            bxf.Extended = br.AssertByte(0, 4);
+            bxf.Extended = br.AssertByte([0, 4]);
             br.AssertByte(0);
 
             if (fileHeaderSize != Binder.GetBND4FileHeaderSize(bxf.Format))
@@ -406,8 +408,10 @@ namespace SoulsFormats
 
         protected override void Dispose(bool disposing)
         {
-            _mappedMemory?.Dispose();
-            _mappedMemory = null;
+            _mappedMemory1?.Dispose();
+            _mappedMemory1 = null;
+            _mappedMemory2?.Dispose();
+            _mappedMemory2 = null;
         }
     }
 }

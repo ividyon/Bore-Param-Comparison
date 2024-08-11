@@ -48,11 +48,11 @@ namespace SoulsFormats
             br.BigEndian = false;
 
             br.AssertInt32(2);
-            Version = br.AssertInt32(1, 2, 5, 6, 15, 16, 18);
+            Version = br.AssertInt32([1, 2, 5, 6, 15, 16, 18]);
             int lightCount = br.ReadInt32();
             int namesLength = br.ReadInt32();
             br.AssertInt32(0);
-            LightSize = br.AssertInt32(0xC0, 0xC8, 0xE8, 0xF0);
+            LightSize = br.AssertInt32([0xC0, 0xC8, 0xE8, 0xF0]);
             br.AssertPattern(0x24, 0x00);
             LongOffsets = br.VarintLong = LightSize != 0xC0;
 
@@ -122,11 +122,6 @@ namespace SoulsFormats
         public class Light
         {
             /// <summary>
-            /// Unknown.
-            /// </summary>
-            public byte[] Unk00 { get; private set; }
-
-            /// <summary>
             /// Name of this light.
             /// </summary>
             public string Name { get; set; }
@@ -137,9 +132,46 @@ namespace SoulsFormats
             public LightType Type { get; set; }
 
             /// <summary>
+            /// Center of the light.
+            /// </summary>
+            public Vector3 Position { get; set; }
+
+            /// <summary>
+            /// Rotation of a spot light.
+            /// </summary>
+            [RotationRadians]
+            public Vector3 Rotation { get; set; }
+
+            /// <summary>
+            /// Distance the light shines.
+            /// </summary>
+            public float Radius { get; set; }
+
+            /// <summary>
             /// Unknown.
             /// </summary>
-            public bool Unk1C { get; set; }
+            public float Sharpness { get; set; }
+
+            /// <summary>
+            /// Distance from start before light appears.
+            /// </summary>
+            public float LightStartCutoff { get; set; }
+
+            /// <summary>
+            /// Unknown.
+            /// </summary>
+            public bool ShadowModelCullFlip { get; set; }
+
+            /// <summary>
+            /// Distance required for a light to transition into view. 0 = always enabled.
+            /// </summary>
+            public float EnableDist { get; set; }
+
+            /// <summary>
+            /// Unknown; 4 bytes.
+            /// Affects if a light appears normally, but details are unknown.
+            /// </summary>
+            public byte[] EnableState_UnkC0 { get; set; }
 
             /// <summary>
             /// Color of the light on diffuse surfaces.
@@ -159,81 +191,20 @@ namespace SoulsFormats
             public Color SpecularColor { get; set; }
 
             /// <summary>
-            /// Whether the light casts shadows.
-            /// </summary>
-            public bool CastShadows { get; set; }
-
-            /// <summary>
             /// Intensity of specular lighting.
             /// </summary>
             public float SpecularPower { get; set; }
 
             /// <summary>
-            /// Tightness of the spot light beam.
+            /// Whether the light casts shadows.
             /// </summary>
-            public float ConeAngle { get; set; }
-
-            /// <summary>
-            /// Unknown.
-            /// </summary>
-            public float Unk30 { get; set; }
-
-            /// <summary>
-            /// Unknown.
-            /// </summary>
-            public float Unk34 { get; set; }
-
-            /// <summary>
-            /// Center of the light.
-            /// </summary>
-            public Vector3 Position { get; set; }
-
-            /// <summary>
-            /// Rotation of a spot light.
-            /// </summary>
-            [RotationRadians]
-            public Vector3 Rotation { get; set; }
-
-            /// <summary>
-            /// Unknown.
-            /// </summary>
-            public int Unk50 { get; set; }
-
-            /// <summary>
-            /// Unknown.
-            /// </summary>
-            public float Unk54 { get; set; }
-
-            /// <summary>
-            /// Distance the light shines.
-            /// </summary>
-            public float Radius { get; set; }
-
-            /// <summary>
-            /// Unknown.
-            /// </summary>
-            public int Unk5C { get; set; }
-
-            /// <summary>
-            /// Unknown; 4 bytes.
-            /// </summary>
-            public byte[] Unk64 { get; set; }
-
-            /// <summary>
-            /// Unknown.
-            /// </summary>
-            public float Unk68 { get; set; }
+            public bool CastShadows { get; set; }
 
             /// <summary>
             /// Color of shadows cast by the light; alpha is relative to 100.
             /// </summary>
             [SupportsAlpha(true)]
             public Color ShadowColor { get; set; }
-
-            /// <summary>
-            /// Unknown.
-            /// </summary>
-            public float Unk70 { get; set; }
 
             /// <summary>
             /// Minimum time between flickers.
@@ -251,10 +222,76 @@ namespace SoulsFormats
             public float FlickerBrightnessMult { get; set; }
 
             /// <summary>
+            /// Stretches the spot light beam.
+            /// </summary>
+            public float Width { get; set; }
+
+            /// <summary>
+            /// Distance at which spot light beam starts.
+            /// </summary>
+            public float NearClip { get; set; }
+
+            /// <summary>
+            /// Tightness of the spot light beam.
+            /// </summary>
+            public float ConeAngle { get; set; }
+
+            /// <summary>
+            /// Referenced by map events. Only used in DS2.
+            /// </summary>
+            public int EventID { get; set; }
+
+            /// <summary>
+            /// Unknown; not present before Sekiro.
+            /// </summary>
+            public float VolumeDensity { get; set; }
+
+            /// <summary>
             /// Unknown.
             /// </summary>
-            public int Unk80 { get; set; }
+            public bool Unk1C { get; set; }
 
+            /// <summary>
+            /// Unknown.
+            /// </summary>
+            public float Unk30 { get; set; }
+
+            /// <summary>
+            /// Unknown.
+            /// </summary>
+            public float Unk34 { get; set; }
+
+            /// <summary>
+            /// Unknown.
+            /// </summary>
+            public int Unk50 { get; set; }
+
+            /// <summary>
+            /// Unknown.
+            /// </summary>
+            public float Unk54 { get; set; }
+
+            /// <summary>
+            /// Unknown.
+            /// </summary>
+            public int Unk5C { get; set; }
+
+            /// <summary>
+            /// Unknown; 4 bytes.
+            /// </summary>
+            public byte[] Unk64 { get; set; }
+
+            /// <summary>
+            /// Unknown.
+            /// </summary>
+            public float Unk68 { get; set; }
+
+            /// <summary>
+            /// Unknown.
+            /// </summary>
+            public float Unk70 { get; set; }
+
+            
             /// <summary>
             /// Unknown; 4 bytes.
             /// </summary>
@@ -274,48 +311,27 @@ namespace SoulsFormats
             /// Unknown.
             /// </summary>
             public float Unk98 { get; set; }
-
+            
             /// <summary>
-            /// Distance at which spot light beam starts.
+            /// Unknown.
             /// </summary>
-            public float NearClip { get; set; }
-
-            /// <summary>
-            /// Unknown; 4 bytes.
-            /// </summary>
-            public byte[] UnkA0 { get; set; }
+            public byte UnkA0 { get; set; }
 
             /// <summary>
             /// Unknown.
             /// </summary>
-            public float Sharpness { get; set; }
+            public byte UnkA1 { get; set; }
 
+            /// <summary>
+            /// Unknown.
+            /// </summary>
+            public byte UnkA2 { get; set; }
+            
             /// <summary>
             /// Unknown.
             /// </summary>
             public float UnkAC { get; set; }
-
-            /// <summary>
-            /// Stretches the spot light beam.
-            /// </summary>
-            public float Width { get; set; }
-
-            /// <summary>
-            /// Distance from start before light appears.
-            /// </summary>
-            public float LightStartCutoff { get; set; }
-
-            /// <summary>
-            /// Unknown; 4 bytes.
-            /// Affects if a light appears normally, but details are unknown.
-            /// </summary>
-            public byte[] EnableState_UnkC0 { get; set; }
-
-            /// <summary>
-            /// Distance required for a light to transition into view. 0 = always enabled.
-            /// </summary>
-            public float EnableDist { get; set; }
-
+            
             /// <summary>
             /// Unknown; not present before Sekiro.
             /// </summary>
@@ -325,11 +341,6 @@ namespace SoulsFormats
             /// Unknown; not present before Sekiro.
             /// </summary>
             public float UnkCC { get; set; }
-
-            /// <summary>
-            /// Unknown; not present before Sekiro.
-            /// </summary>
-            public float VolumeDensity { get; set; }
 
             /// <summary>
             /// Unknown; not present before Sekiro.
@@ -367,6 +378,11 @@ namespace SoulsFormats
             public int UnkEB { get; set; }
 
             /// <summary>
+            /// Unknown.
+            /// </summary>
+            public byte[] Unk00 { get; private set; }
+
+            /// <summary>
             /// Creates a Light with default values.
             /// </summary>
             public Light()
@@ -384,11 +400,14 @@ namespace SoulsFormats
                 Unk64 = new byte[4] { 0, 0, 0, 1 };
                 ShadowColor = Color.FromArgb(100, 0, 0, 0);
                 FlickerBrightnessMult = 1;
-                Unk80 = -1;
+                EventID = -1;
                 Unk84 = new byte[4];
                 Unk98 = 1;
                 NearClip = 1;
-                UnkA0 = new byte[4] { 1, 0, 2, 1 };
+                UnkA0 = 1;
+                UnkA1 = 0;
+                UnkA2 = 2;
+                ShadowModelCullFlip = true;
                 Sharpness = 1;
                 EnableState_UnkC0 = new byte[4];
             }
@@ -402,7 +421,6 @@ namespace SoulsFormats
                 clone.Unk00 = (byte[])Unk00.Clone();
                 clone.Unk64 = (byte[])Unk64.Clone();
                 clone.Unk84 = (byte[])Unk84.Clone();
-                clone.UnkA0 = (byte[])UnkA0.Clone();
                 clone.EnableState_UnkC0 = (byte[])EnableState_UnkC0.Clone();
                 return clone;
             }
@@ -435,7 +453,7 @@ namespace SoulsFormats
                 FlickerIntervalMin = br.ReadSingle();
                 FlickerIntervalMax = br.ReadSingle();
                 FlickerBrightnessMult = br.ReadSingle();
-                Unk80 = br.ReadInt32();
+                EventID = br.ReadInt32();
                 Unk84 = br.ReadBytes(4);
                 Unk88 = br.ReadSingle();
                 br.AssertInt32(0);
@@ -443,7 +461,10 @@ namespace SoulsFormats
                 br.AssertInt32(0);
                 Unk98 = br.ReadSingle();
                 NearClip = br.ReadSingle();
-                UnkA0 = br.ReadBytes(4);
+                UnkA0 = br.ReadByte();
+                UnkA1 = br.ReadByte();
+                UnkA2 = br.ReadByte();
+                ShadowModelCullFlip = br.ReadBoolean();
                 Sharpness = br.ReadSingle();
                 br.AssertInt32(0);
                 UnkAC = br.ReadSingle();
@@ -502,7 +523,7 @@ namespace SoulsFormats
                 bw.WriteSingle(FlickerIntervalMin);
                 bw.WriteSingle(FlickerIntervalMax);
                 bw.WriteSingle(FlickerBrightnessMult);
-                bw.WriteInt32(Unk80);
+                bw.WriteInt32(EventID);
                 bw.WriteBytes(Unk84);
                 bw.WriteSingle(Unk88);
                 bw.WriteInt32(0);
@@ -510,7 +531,10 @@ namespace SoulsFormats
                 bw.WriteInt32(0);
                 bw.WriteSingle(Unk98);
                 bw.WriteSingle(NearClip);
-                bw.WriteBytes(UnkA0);
+                bw.WriteByte(UnkA0);
+                bw.WriteByte(UnkA1);
+                bw.WriteByte(UnkA2);
+                bw.WriteBoolean(ShadowModelCullFlip);
                 bw.WriteSingle(Sharpness);
                 bw.WriteInt32(0);
                 bw.WriteSingle(UnkAC);

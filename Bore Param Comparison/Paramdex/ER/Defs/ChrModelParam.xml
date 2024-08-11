@@ -53,7 +53,7 @@
       <Increment>0.1</Increment>
       <SortID>210</SortID>
     </Field>
-    <Field Def="u32 unk = 0">
+    <Field Def="u32 unk = 0" FirstVersion="10601000">
       <DisplayName>Unk</DisplayName>
       <Description>Unk (Added in 1.06)</Description>
       <EditFlags>None</EditFlags>

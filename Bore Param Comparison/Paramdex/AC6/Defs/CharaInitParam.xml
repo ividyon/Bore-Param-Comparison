@@ -38,7 +38,7 @@
     <Field Def="s32 UnkInt0x74"></Field>
     <Field Def="s32 UnkInt0x78"></Field>
     <Field Def="s32 UnkInt0x7C"></Field>
-    <Field Def="s32 UnkInt0x80"></Field>
+    <Field Def="s32 equippedItemId"></Field>
     <Field Def="s32 UnkInt0x84"></Field>
     <Field Def="s32 UnkInt0x88"></Field>
     <Field Def="s32 UnkInt0x8C"></Field>
@@ -48,7 +48,7 @@
     <Field Def="s32 UnkInt0x9C"></Field>
     <Field Def="s32 UnkInt0xA0"></Field>
     <Field Def="s32 UnkInt0xA4"></Field>
-    <Field Def="s32 npcPlayerThinkId"></Field>
+    <Field Def="s32 acDesignId"></Field>
     <Field Def="s32 Unk0xAC"></Field>
     <Field Def="s32 Unk0xB0"></Field>
     <Field Def="s32 Unk0xB4"></Field>
@@ -66,7 +66,7 @@
     <Field Def="u8 UnkByte0xCD"></Field>
     <Field Def="u8 UnkByte0xCE"></Field>
     <Field Def="u8 UnkByte0xCF"></Field>
-    <Field Def="u8 UnkByte0xD0"></Field>
+    <Field Def="u8 equippedItemNum"></Field>
     <Field Def="u8 UnkByte0xD1"></Field>
     <Field Def="u8 UnkByte0xD2"></Field>
     <Field Def="u8 UnkByte0xD3"></Field>
@@ -106,7 +106,7 @@
     <Field Def="s32 equipPartBooster"></Field>
     <Field Def="s32 Unk0x118"></Field>
     <Field Def="s32 Unk0x11C"></Field>
-    <Field Def="s32 UnkInt0x120"></Field>
+    <Field Def="s32 initialHP"></Field>
     <Field Def="s32 UnkInt0x124"></Field>
     <Field Def="s32 UnkInt0x128"></Field>
     <Field Def="s16 UnkShort0x12C"></Field>

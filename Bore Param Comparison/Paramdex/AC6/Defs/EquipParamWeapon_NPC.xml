@@ -7,7 +7,7 @@
   <FormatVersion>203</FormatVersion>
   <Fields>
     <Field Def="s32 Unk0x00"></Field>
-    <Field Def="s32 behaviorJudgeId"></Field>
+    <Field Def="s32 variationId"></Field>
     <Field Def="s32 sortId"></Field>
     <Field Def="s32 wanderingEquipId"></Field>
     <Field Def="f32 weight"></Field>
@@ -54,9 +54,7 @@
     <Field Def="s32 originEquipWep13"></Field>
     <Field Def="s32 originEquipWep14"></Field>
     <Field Def="s32 originEquipWep15"></Field>
-    <Field Def="f32 meleeConsecutiveHits">
-      <Description>Number of chain attacks possible with additional inputs.</Description>
-    </Field>
+    <Field Def="f32 shieldPart_DamageRate"></Field>
     <Field Def="f32 weakB_DamageRate"></Field>
     <Field Def="f32 weakC_DamageRate"></Field>
     <Field Def="f32 weakD_DamageRate"></Field>
@@ -90,7 +88,7 @@
     <Field Def="u8 atkMaterial"></Field>
     <Field Def="u8 defMaterial"></Field>
     <Field Def="u8 defSfxMaterial"></Field>
-    <Field Def="u8 correctType"></Field>
+    <Field Def="u8 correctType_Kinetic"></Field>
     <Field Def="u8 spAttribute"></Field>
     <Field Def="s16 spAtkCategory"></Field>
     <Field Def="u8 wepmotionOneHandId"></Field>
@@ -114,11 +112,11 @@
     <Field Def="u8 guardResist_CameraDisruption"></Field>
     <Field Def="u8 guardResist_Curse_Unknown"></Field>
     <Field Def="u8 isDurabilityDivergence"></Field>
-    <Field Def="u8 rightHandEquipable:1"></Field>
-    <Field Def="u8 leftHandEquipable:1"></Field>
+    <Field Def="u8 equipFrontRightSlot:1"></Field>
+    <Field Def="u8 equipFrontLeftSlot:1"></Field>
     <Field Def="u8 bothHandEquipable:1"></Field>
-    <Field Def="u8 arrowSlotEquipable:1"></Field>
-    <Field Def="u8 boltSlotEquipable:1"></Field>
+    <Field Def="u8 equipBackRightSlot:1"></Field>
+    <Field Def="u8 equipBackLeftSlot:1"></Field>
     <Field Def="u8 enableGuard:1"></Field>
     <Field Def="u8 enableParry:1"></Field>
     <Field Def="u8 enableMagic:1"></Field>
@@ -196,7 +194,7 @@
     <Field Def="u16 attackBaseDark"></Field>
     <Field Def="u8 correctType_Dark"></Field>
     <Field Def="u8 correctType_Poison"></Field>
-    <Field Def="u8 sortGroupId"></Field>
+    <Field Def="u8 sortGroupIdOld"></Field>
     <Field Def="u8 atkAttribute2"></Field>
     <Field Def="s8 Unk0x192"></Field>
     <Field Def="s8 Unk0x193"></Field>
@@ -212,7 +210,10 @@
     <Field Def="u16 wepType"></Field>
     <Field Def="s32 Unk0x1A8"></Field>
     <Field Def="s32 Unk0x1AC"></Field>
-    <Field Def="s32 Unk0x1B0"></Field>
+    <Field Def="s8 Unk0x1B0"></Field>
+    <Field Def="s8 Unk0x1B1"></Field>
+    <Field Def="s8 Unk0x1B2"></Field>
+    <Field Def="s8 Unk0x1B3"></Field>
     <Field Def="s32 Unk0x1B4"></Field>
     <Field Def="s32 Unk0x1B8"></Field>
     <Field Def="s32 Unk0x1BC"></Field>
@@ -262,7 +263,7 @@
     <Field Def="u8 Unk0x23F"></Field>
     <Field Def="s32 Unk0x240"></Field>
     <Field Def="s32 Unk0x244"></Field>
-    <Field Def="f32 Unk0x248"></Field>
+    <Field Def="f32 Unk0x248"></Field> 
     <Field Def="s32 Unk0x24C"></Field>
     <Field Def="s32 Unk0x250"></Field>
     <Field Def="s32 Unk0x254"></Field>
@@ -285,14 +286,14 @@
     <Field Def="s32 Unk0x298"></Field>
     <Field Def="s32 Unk0x29C"></Field>
     <Field Def="s32 Unk0x2A0"></Field>
-    <Field Def="s32 Unk0x2A4"></Field>
+    <Field Def="f32 Unk0x2A4"></Field>
     <Field Def="s32 Unk0x2A8"></Field>
     <Field Def="s32 Unk0x2AC"></Field>
     <Field Def="f32 Unk0x2B0"></Field>
     <Field Def="f32 Unk0x2B4"></Field>
     <Field Def="f32 Unk0x2B8"></Field>
     <Field Def="f32 Unk0x2BC"></Field>
-    <Field Def="s32 Unk0x2C0"></Field>
+    <Field Def="f32 UnkFloat0x2C0"></Field>
     <Field Def="s32 Unk0x2C4"></Field>
     <Field Def="s32 Unk0x2C8"></Field>
     <Field Def="s32 Unk0x2CC"></Field>

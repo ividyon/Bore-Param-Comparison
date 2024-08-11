@@ -9,9 +9,10 @@ namespace BoreParamCompare
 {
     public partial class MainForm : Form
     {
-        public static string Version = Application.ProductVersion;
-        public static string ProgramTitle = $"Bore Param Comparison v{Version}";
+        public static readonly string Version = Application.ProductVersion;
+        public static readonly string ProgramTitle = $"Bore Param Comparison v{Version}";
 
+        private readonly string outputFolder = "Output";
         private string gameType = "";
 
         private readonly List<string> gameTypes = new()
@@ -27,8 +28,6 @@ namespace BoreParamCompare
             "ER",
             "AC6",
         };
-
-        private readonly string outputFolder = "Output";
 
         public MainForm()
         {
@@ -190,7 +189,8 @@ namespace BoreParamCompare
                     //is a byte array
                     var oldFieldArray = (byte[])oldField;
                     var newFieldArray = (byte[])newField;
-                    for (var i=0; i < oldFieldArray.Length; i++)
+
+                    for (var i = 0; i < oldFieldArray.Length; i++)
                     {
                         var old_byte = oldFieldArray[i];
                         var new_byte = newFieldArray[i];
@@ -398,7 +398,11 @@ namespace BoreParamCompare
         {
             ConcurrentBag<List<string>> superChangeList = new();
 
+#if !DEBUG
             Parallel.ForEach(Partitioner.Create(paramList_old), item =>
+#else
+            paramList_old.ToList().ForEach(item =>
+#endif
             {
                 //
                 //UpdateConsole($"Scanning Param: {item.Key}");
@@ -410,7 +414,7 @@ namespace BoreParamCompare
                     //Couldn't find matching param in other list. Whatever caused this is logged elsewhere.
                     return;
                 }
-                
+
                 PARAM param_old = paramList_old[item.Key];
                 PARAM param_new = paramList_new[item.Key];
 
@@ -498,35 +502,38 @@ namespace BoreParamCompare
 
                     if (param_old[row_new.ID] == null)
                     {
-                        string ID_new_str = MakeIDString(paramNameStr, row_new, true);
-                        ID_new_str += ExclusiveLogName(row_new);
-                        if (!cb_LogAddedRemovedRowCells.Checked)
+                        if (cb_logAddedRemovedRows.Checked)
                         {
-                            changeList.Add(ID_new_str + " ROW ADDED");
-                        }
-                        else if (cb_log_field_specifics.Checked)
-                        {
-                            // Log all info for added row
-                            string rowInfo = "";
-                            string delimiter = ", ";
-                            if (!cb_fields_share_row.Checked)
+                            string ID_new_str = MakeIDString(paramNameStr, row_new, true);
+                            ID_new_str += ExclusiveLogName(row_new);
+                            if (!cb_LogAddedRemovedRowCells.Checked || !cb_log_field_specifics.Checked)
                             {
-                                delimiter = "\r\n\t";
-                                rowInfo = delimiter;
+                                changeList.Add(ID_new_str + " ROW ADDED");
+                                paramChanges++;
                             }
-                            // Generate row data
-                            foreach (var cell in row_new.Cells)
+                            else
                             {
-                                var value = cell.Value;
-                                if (cell.Value.GetType() == typeof(byte[]))
-                                    value = Convert.ToHexString((byte[])cell.Value);
-                                rowInfo += $"{cell.Def.InternalName}: {value}{delimiter}";
+                                // Log all info for added row
+                                string rowInfo = "";
+                                string delimiter = ", ";
+                                if (!cb_fields_share_row.Checked)
+                                {
+                                    delimiter = "\r\n\t";
+                                    rowInfo = delimiter;
+                                }
+                                // Generate row data
+                                foreach (var cell in row_new.Cells)
+                                {
+                                    var value = cell.Value;
+                                    if (cell.Value.GetType() == typeof(byte[]))
+                                        value = Convert.ToHexString((byte[])cell.Value);
+                                    rowInfo += $"{cell.Def.InternalName}: {value}{delimiter}";
+                                }
+                                rowInfo = rowInfo[..^delimiter.Length];
+                                changeList.Add($"{ID_new_str} ROW ADDED: {rowInfo}");
+                                paramChanges++;
                             }
-                            rowInfo = rowInfo[..^delimiter.Length];
-                            changeList.Add($"{ID_new_str} ROW ADDED: {rowInfo}");
                         }
-                        //
-                        paramChanges++;
 
                         param_new.Rows.Remove(row_new);
                         i--;
@@ -540,34 +547,38 @@ namespace BoreParamCompare
 
                     if (param_new[row_old.ID] == null)
                     {
-                        string ID_old_str = MakeIDString(paramNameStr, row_old, true);
-                        ID_old_str += ExclusiveLogName(row_old);
-                        if (!cb_LogAddedRemovedRowCells.Checked)
+                        if (cb_logAddedRemovedRows.Checked)
                         {
-                            changeList.Add(ID_old_str + " ROW REMOVED");
-                        }
-                        else if (cb_log_field_specifics.Checked)
-                        {
-                            // Log all info for removed row
-                            string rowInfo = "";
-                            string delimiter = ", ";
-                            if (!cb_fields_share_row.Checked)
+                            string ID_old_str = MakeIDString(paramNameStr, row_old, true);
+                            ID_old_str += ExclusiveLogName(row_old);
+                            if (!cb_LogAddedRemovedRowCells.Checked || !cb_log_field_specifics.Checked)
                             {
-                                delimiter = "\r\n\t";
-                                rowInfo = delimiter;
+                                changeList.Add(ID_old_str + " ROW REMOVED");
+                                paramChanges++;
                             }
-                            // Generate row data
-                            foreach (var cell in row_old.Cells)
+                            else
                             {
-                                var value = cell.Value;
-                                if (cell.Value.GetType() == typeof(byte[]))
-                                    value = Convert.ToHexString((byte[])cell.Value);
-                                rowInfo += $"{cell.Def.InternalName}: {value}{delimiter}";
+                                // Log all info for removed row
+                                string rowInfo = "";
+                                string delimiter = ", ";
+                                if (!cb_fields_share_row.Checked)
+                                {
+                                    delimiter = "\r\n\t";
+                                    rowInfo = delimiter;
+                                }
+                                // Generate row data
+                                foreach (var cell in row_old.Cells)
+                                {
+                                    var value = cell.Value;
+                                    if (cell.Value.GetType() == typeof(byte[]))
+                                        value = Convert.ToHexString((byte[])cell.Value);
+                                    rowInfo += $"{cell.Def.InternalName}: {value}{delimiter}";
+                                }
+                                rowInfo = rowInfo[..^delimiter.Length];
+                                changeList.Add($"{ID_old_str} ROW REMOVED: {rowInfo}");
+                                paramChanges++;
                             }
-                            rowInfo = rowInfo[..^delimiter.Length];
-                            changeList.Add($"{ID_old_str} ROW REMOVED: {rowInfo}");
                         }
-                        paramChanges++;
 
                         param_old.Rows.Remove(row_old);
                         i--;
@@ -614,8 +625,8 @@ namespace BoreParamCompare
 
                         param_old.Rows.Remove(row_old);
                         param_new.Rows.Remove(row_new);
-                        iRow -= 2;
-                        rowCount -= 2;
+                        iRow--;
+                        rowCount--;
                         continue;
                     }
 
@@ -775,7 +786,7 @@ namespace BoreParamCompare
 
             //Check for changes
             UpdateConsole("Checking param changes");
-            
+
             var superChangeList = CheckParamChanges(paramList_old, paramList_new); //check param changes, return list of lists
             #endregion
 
@@ -889,7 +900,7 @@ namespace BoreParamCompare
                 cb_dupe_no_both.Enabled = true;
             }
         }
- 
+
         private void cb_dupe_CheckedChanged(object sender, EventArgs e)
         {
             toggle_buttons_dupe();
@@ -1002,13 +1013,18 @@ namespace BoreParamCompare
                 e.Effect = DragDropEffects.None;
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void cb_logAddedRemovedRows_CheckedChanged(object sender, EventArgs e)
         {
-            MessageBox.Show("Bore Pararm Comparison - Made by kingborehaha/george"
+            cb_LogAddedRemovedRowCells.Enabled = cb_logAddedRemovedRows.Checked;
+        }
+
+        private void b_info_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show("Bore Param Comparison - Made by kingborehaha/george"
                 + "\n\nThis tool is for logging differences between param files, which includes regulation.bin, GameParam.parambnd, and individual .param files."
                 + "\n\nYou can drag & drop param files onto UI elements to automatically select them, or just click the two \"Open\" buttons to browse."
                 + "\n\nThis tool can compare parameters with differing paramdefs. To include addtional paramdefs, place them into the \"Paramdex ALT\" folder, then within in the right game folder."
-                , "Info" 
+                , "Info"
                 );
         }
     }

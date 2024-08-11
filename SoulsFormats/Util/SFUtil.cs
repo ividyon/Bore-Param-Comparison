@@ -1,4 +1,5 @@
-﻿using SoulsFormats.Util;
+﻿using Org.BouncyCastle.Asn1.Cms;
+using SoulsFormats.Util;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -7,6 +8,7 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
+using ZstdNet;
 
 namespace SoulsFormats
 {
@@ -313,13 +315,45 @@ namespace SoulsFormats
         public static byte[] ReadZlib(BinaryReaderEx br, int compressedSize)
         {
             br.AssertByte(0x78);
-            br.AssertByte(0x01, 0x5E, 0x9C, 0xDA);
+            br.AssertByte([0x01, 0x5E, 0x9C, 0xDA]);
             byte[] compressed = br.ReadBytes(compressedSize - 2);
 
             using (var decompressedStream = new MemoryStream())
             {
                 using (var compressedStream = new MemoryStream(compressed))
                 using (var deflateStream = new DeflateStream(compressedStream, CompressionMode.Decompress, true))
+                {
+                    deflateStream.CopyTo(decompressedStream);
+                }
+                return decompressedStream.ToArray();
+            }
+        }
+
+        // TODO: actually implement this properly
+        public static int WriteZstd(BinaryWriterEx bw, byte compressionLevel, Span<byte> input)
+        {
+            long start = bw.Position;
+
+            using var compressor = new Compressor(new CompressionOptions(compressionLevel));
+            var compressedData = compressor.Wrap(input);
+
+            var data = input.ToArray();
+            using (var deflateStream = new DeflateStream(bw.Stream, CompressionMode.Compress, true))
+            {
+                deflateStream.Write(data, 0, input.Length);
+            }
+
+            return (int)(bw.Position - start);
+        }
+
+        public static byte[] ReadZstd(BinaryReaderEx br, int compressedSize)
+        {
+            byte[] compressed = br.ReadBytes(compressedSize);
+
+            using (var decompressedStream = new MemoryStream())
+            {
+                using (var compressedStream = new MemoryStream(compressed))
+                using (var deflateStream = new DecompressionStream(compressedStream))
                 {
                     deflateStream.CopyTo(decompressedStream);
                 }

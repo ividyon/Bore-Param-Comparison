@@ -66,7 +66,7 @@ namespace SoulsFormats
         protected override void Read(BinaryReaderEx br)
         {
             br.Position = 0x2C;
-            br.BigEndian = BigEndian = br.AssertByte(0, 0xFF) == 0xFF;
+            br.BigEndian = BigEndian = br.AssertByte([0, 0xFF]) == 0xFF;
             Format2D = (FormatFlags1)br.ReadByte();
             Format2E = (FormatFlags2)br.ReadByte();
             ParamdefFormatVersion = br.ReadByte();
@@ -79,15 +79,6 @@ namespace SoulsFormats
             // The strings offset in the header is highly unreliable; only use it as a last resort
             long actualStringsOffset = 0;
             long stringsOffset = br.ReadUInt32();
-            if (br.AllowSemiEndianness && stringsOffset > int.MaxValue && BigEndian)
-            {
-                // Bore param comparison addition.
-                // strings offset check is absolutely not a safe or properly chekc, but it works for applicable DESR params.
-                // Disabled by default via AllowSemiEndianness.
-                br.SemiEndianness = true;
-                RowReader.SemiEndianness = true;
-            }
-
             if (Format2D.HasFlag(FormatFlags1.Flag01) && Format2D.HasFlag(FormatFlags1.IntDataOffset) || Format2D.HasFlag(FormatFlags1.LongDataOffset))
             {
                 br.AssertInt16(0);
@@ -96,10 +87,6 @@ namespace SoulsFormats
             {
                 br.ReadUInt16(); // Data start
             }
-
-            if (br.SemiEndianness)
-                br.BigEndian = BigEndian = false;
-
             Unk06 = br.ReadInt16();
             ParamdefDataVersion = br.ReadInt16();
             ushort rowCount = br.ReadUInt16();
@@ -118,11 +105,7 @@ namespace SoulsFormats
             }
             else
             {
-                if (br.SemiEndianness)
-                    br.BigEndian = BigEndian = true;
                 ParamType = br.ReadFixStr(0x20);
-                if (br.SemiEndianness)
-                    br.BigEndian = BigEndian = false;
             }
             br.Skip(4); // Format
             if (Format2D.HasFlag(FormatFlags1.Flag01) && Format2D.HasFlag(FormatFlags1.IntDataOffset))
@@ -249,9 +232,6 @@ namespace SoulsFormats
         public void ApplyParamdef(PARAMDEF paramdef)
         {
             AppliedParamdef = paramdef;
-
-            if (RowReader.SemiEndianness)
-                RowReader.BigEndian = false;
             foreach (Row row in Rows)
                 row.ReadCells(RowReader, AppliedParamdef, ulong.MaxValue);
         }

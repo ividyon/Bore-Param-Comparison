@@ -485,7 +485,7 @@ namespace SoulsFormats
                 private protected override void ReadTypeData(BinaryReaderEx br)
                 {
                     EffectID = br.ReadInt32();
-                    StartDisabled = br.AssertInt32(0, 1) == 1;
+                    StartDisabled = br.AssertInt32([0, 1]) == 1;
                 }
 
                 private protected override void WriteTypeData(BinaryWriterEx bw)
@@ -810,8 +810,8 @@ namespace SoulsFormats
                 internal override void GetIndices(MSBB msb, Entries entries)
                 {
                     base.GetIndices(msb, entries);
-                    SpawnPointIndices = MSB.FindIndices(entries.Regions, SpawnPointNames);
-                    SpawnPartIndices = MSB.FindIndices(entries.Parts, SpawnPartNames);
+                    SpawnPointIndices = MSB.FindIndices(this, entries.Regions, SpawnPointNames);
+                    SpawnPartIndices = MSB.FindIndices(this, entries.Parts, SpawnPartNames);
                 }
             }
 
@@ -904,7 +904,7 @@ namespace SoulsFormats
                 /// <summary>
                 /// Unknown.
                 /// </summary>
-                public StateType ObjActState { get; set; }
+                public StateType ObjActState { get; set; } = StateType.Default;
 
                 /// <summary>
                 /// Unknown, probably enables or disables the ObjAct.
@@ -1022,6 +1022,7 @@ namespace SoulsFormats
                 /// <summary>
                 /// Position of the map.
                 /// </summary>
+                [PositionProperty]
                 public Vector3 Position { get; set; }
 
                 /// <summary>
@@ -1402,7 +1403,7 @@ namespace SoulsFormats
                 internal override void GetIndices(MSBB msb, Entries entries)
                 {
                     base.GetIndices(msb, entries);
-                    GroupPartsIndices = MSB.FindIndices(entries.Parts, GroupPartsNames);
+                    GroupPartsIndices = MSB.FindIndices(this, entries.Parts, GroupPartsNames);
                 }
             }
 
